@@ -1,13 +1,47 @@
 (ns app.core
-  (:require [reagent.core :as r]))
+  (:require [reagent.core :as r]
+            [ajax.core :refer [GET json-response-format]]))
 
-;; Mock Data =====
-(def mock-articles
-  [{:title "Backpacking is fun"}
-   {:title "Learn Docker"}
-   {:title "Summer Plans 2021"}
-   {:title "How to become a web developer"}
-   {:title "How to Design Programs"}])
+;; aricles state
+(defonce articles-state (r/atom nil))
+
+;; URI
+(defonce api-uri "https://conduit.productionready.io/api")
+
+(defn handler [response]
+  (reset! articles-state response))
+
+(defn error-handler [{:keys [status status-text]}]
+  (.log js/console (str "something bad happened: " status " " status-text)))
+
+(defn articles-browse []
+  (GET (str api-uri "/articles?limit=20")
+       {:handler handler
+        :response-format (json-response-format {:keywords? true})
+        :error-handler error-handler}))
+
+(comment
+  (articles-browse)
+  (first (:articles (deref articles-state))))
+
+(defn article-preview [{:keys [title description favoritesCount author createdAt tagList]}]
+  [:div.article-preview
+   [:div.article-meta
+    [:a
+     [:img {:src (:image author)}]]
+    [:div.info
+     [:a.author (:username author)]
+     [:span.date (.toDateString (new js/Date createdAt))]]
+    [:div.pull-xs-right
+     [:button.btn.btn-sm.btn-outline-primary
+      [:i.ion-heart favoritesCount]]]]
+   [:a.preview-link
+    [:h1 title]
+    [:p description]
+    [:span "Read more..."]
+    [:ul.tag-list
+     (for [tag tagList]
+       ^{:key tag} [:li.tag-default.tag-pill.tag-outline tag])]]])
 
 (defn articles [items]
   (if-not (seq items)
@@ -15,8 +49,8 @@
     (if (= 0 (count items))
       [:div.article-preview "No articles are here... yet."]
       [:div
-       (for [article items]
-         [:h2 (:title article)])])))
+       (for [{:keys [slug] :as article} items]
+         ^{:key slug} [article-preview article])])))
 
 (defn header []
   [:nav.navbar.navbar-light>div.container
@@ -36,7 +70,7 @@
     [:ul.nav.nav-pills.outline-active
      [:li.nav-item
       [:a.nav-link.active {:href ""} "Global Feed"]]]]
-   [articles]])
+   [articles (:articles (deref articles-state))]])
 
 (defn home-page []
   [:div.home-page
@@ -61,4 +95,5 @@
 (defn ^:export main
   "Run application startup logic. Runs only once"
   []
+  (articles-browse)
   (render))

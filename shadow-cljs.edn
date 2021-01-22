@@ -15,6 +15,7 @@
         :output-to "out/e2e.js"
         :target :node-test}}
  :dependencies [[reagent "0.8.1"]
+                [cljs-ajax "0.8.1"]
                 [devcards "0.2.6"]]
  :dev-http {4200 "public"}
  :nrepl {:port 3333}
