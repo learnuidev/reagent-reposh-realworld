@@ -1,5 +1,9 @@
 (ns app.core
   (:require [reagent.core :as r]
+            [reitit.frontend :as rf]
+            [reitit.frontend.easy :as rfe]
+            [reitit.coercion.spec :as rss]
+            [spec-tools.data-spec :as ds]
             [ajax.core :refer [GET json-response-format]]))
 
 ;; aricles state
@@ -54,7 +58,12 @@
 
 (defn header []
   [:nav.navbar.navbar-light>div.container
-   [:a.navbar-brand "conduit"]])
+   [:a.navbar-brand {:href (rfe/href ::home)} "conduit"]
+   [:ul.nav.navbar-nav.pull-xs-right
+    [:li.nav-item
+     [:a.nav-link {:href (rfe/href ::home)} "Home"]]
+    [:li.nav-item
+     [:a.nav-link {:href (rfe/href ::login)} "Login"]]]])
 
 ;; Home page =====
 (defn banner [app-name token]
@@ -72,6 +81,10 @@
       [:a.nav-link.active {:href ""} "Global Feed"]]]]
    [articles (:articles (deref articles-state))]])
 
+;; 4. Routes ====
+
+
+;; Step 4.1 - Define Pages - DONE
 (defn home-page []
   [:div.home-page
    [banner "conduit" "auth-user-token"]
@@ -81,10 +94,53 @@
      [:div.sidebar
       [:p "Popular Tags"]]]]])
 
+(defn auth-signin [event]
+  (.preventDefault event)
+  (js/console.log "LOGIN"))
+
+(defn login-page []
+  [:div.auth-page>div.container.page>div.row
+   [:div.col-md-6.offset-md-3.col-xs-12
+    [:h1.text-xs-center "Sign In"]
+    [:p.text-xs-center [:a "Need an account?"]]
+    [:form {:on-submit auth-signin}
+     [:fieldset
+      [:fieldset.form-group
+       [:input.form-control.form-control-lg {:type :email :placeholder "john@gmail.com"}]]
+      [:fieldset.form-group
+       [:input.form-control.form-control-lg {:type :password :placeholder "Password"}]]
+      [:button.btn.btn-lg.btn-primary.pull-xs-right {:type :submit} "Sign In"]]]]])
+
+;; Step 4.2 - Install reitit - DONE
+;; Step 4.3 - require necessary reitit dependencies - DONE
+;; Step 4.4 - Define routes
+(def routes
+  [["/"      {:name ::home
+              :view #'home-page}]
+   ["/login" {:name ::login
+              :view #'login-page}]])
+
+;; Step 4.5 - Define routing state
+(defonce routes-state (r/atom nil))
+
+(comment "takes route name and generates the route path, nil if not found"
+         (rfe/href ::login))
+
+;; Step 4.6 - write the router-start! function that starts the router
+(defn router-start! []
+  (rfe/start!
+   (rf/router routes {:data {:coercion rss/coercion}})
+   (fn [matched-route] (reset! routes-state matched-route))
+    ;; set to false to enable HistoryAPI
+   {:use-fragment false}))
+
+(comment)
+
 (defn app []
   [:div
    [header]
-   [home-page]])
+   (let [current-view (-> @routes-state :data :view)]
+     [current-view])])
 
 (defn ^:dev/after-load render
   "Render the toplevel component for this app.
@@ -95,5 +151,6 @@
 (defn ^:export main
   "Run application startup logic. Runs only once"
   []
+  (router-start!)
   (articles-browse)
   (render))
