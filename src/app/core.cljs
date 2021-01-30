@@ -3,6 +3,8 @@
    [reagent.core :as r]
    ;; Layout
    [app.layout :refer [app]]
+   ;; Auth
+   [app.auth :as auth]
    ;; router
    [app.routes :refer [router-start!]]
    ;; entity
@@ -18,5 +20,6 @@
   "Run application startup logic. Runs only once"
   []
   (router-start!)
+  (auth/me)
   (articles-browse)
   (render))
