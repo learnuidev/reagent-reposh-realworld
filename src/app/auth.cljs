@@ -1,6 +1,8 @@
 (ns app.auth
   (:require [reagent.core :as r]
-            [app.api :refer [api-uri error-handler]]
+            [reitit.frontend.easy :as rfe]
+            [app.api :refer [api-uri]]
+            [clojure.string :as s]
             [ajax.core :refer [GET POST json-request-format json-response-format]]))
 
 ;; Local Storage testing
@@ -20,11 +22,20 @@
 ;; ================================================
 
 (defonce auth-state (r/atom nil))
-(comment @auth-state)
+(defonce error-state (r/atom nil))
+(comment
+  @auth-state
+  (s/join ", " ["error a", "error b"]))
 
 (defn auth-success! [{{:keys [token] :as user} :user}]
   (.setItem js/localStorage "auth-user-token" token)
-  (reset! auth-state user))
+  (reset! auth-state user)
+  (when (seq @error-state)
+    (reset! error-state nil))
+  (rfe/push-state :routes/home))
+
+(defn auth-error! [{{:keys [errors]} :response}]
+  (reset! error-state errors))
 
 ;; ================= Register ===================
 ;; ================================================
@@ -34,7 +45,7 @@
          :handler auth-success!
          :format (json-request-format)
          :response-format (json-response-format {:keywords? true})
-         :error-handler error-handler}))
+         :error-handler auth-error!}))
 
 (comment
   (register! {:username "learnuidev4@foo.com"
@@ -49,7 +60,7 @@
          :handler auth-success!
          :format (json-request-format)
          :response-format (json-response-format {:keywords? true})
-         :error-handler error-handler}))
+         :error-handler auth-error!}))
 (comment
   (login! {:email "learnuidev4@foo.com"
            :password "learnuidev4@foo.com"}))
@@ -65,6 +76,6 @@
        {:handler auth-success!
         :headers (get-auth-header)
         :response-format (json-response-format {:keywords? true})
-        :error-handler error-handler}))
+        :error-handler auth-error!}))
 (comment
   (me))

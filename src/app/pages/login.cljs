@@ -14,7 +14,7 @@
    [:div.col-md-6.offset-md-3.col-xs-12
     [:h1.text-xs-center "Sign In"]
     [:p.text-xs-center
-     [:a {:href (rfe/href :register)} "Need an account?"]]
+     [:a {:href (rfe/href :routes/register)} "Need an account?"]]
     [:form {:on-submit #(login! % {})}
      [:fieldset
       [:fieldset.form-group
