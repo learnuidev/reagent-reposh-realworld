@@ -20,6 +20,5 @@
   "Run application startup logic. Runs only once"
   []
   (router-start!)
-  (auth/me)
   (articles-browse)
   (render))

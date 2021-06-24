@@ -28,10 +28,9 @@
                  :controllers [{:start #(js/console.log "enter - register page")
                                 :stop (fn []
                                         (js/console.log "leave - register page")
-                                        (if (seq @auth/error-state)
-                                          (js/console.log "Gets invoked again")
+                                        (when (seq @auth/error-state)
                                           (reset! auth/error-state nil)))}]}]
-   ["/settings" {:name :settings
+   ["/settings" {:name :routes/settings
                  :view #'settings-page}]])
 
 (comment "takes route name and generates the route path, nil if not found"
@@ -40,7 +39,7 @@
 (defn router-start! []
   (rfe/start!
    (rf/router routes {:data {:coercion rss/coercion
-                             :controllers [{:start #(println "Root controller start")
+                             :controllers [{:start (fn [] (auth/me))
                                             :stop #(println "Root controller stop")}]}})
    (fn [new-match] (swap! routes-state (fn [old-match]
                                          (if new-match
