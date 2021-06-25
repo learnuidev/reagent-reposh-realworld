@@ -44,4 +44,4 @@
              :on-change #(swap! state assoc :password (.. % -target -value))
              :value (:password @state)
              :placeholder "Password"}]]
-          [:button.btn.btn-lg.btn-primary.pull-xs-right {:type :submit} "Sign In"]]]]])))
+          [:button.btn.btn-lg.btn-primary.pull-xs-right {:type :submit} "Sign Up"]]]]])))
