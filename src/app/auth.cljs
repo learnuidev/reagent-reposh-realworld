@@ -71,11 +71,18 @@
     [:Authorization (str "Token " token)]))
 
 ;; ================================================
+;;
+(defn get-me-success! [{user :user}]
+  (reset! auth-state user))
+
+(defn get-me-error! [error]
+  (js/console.log "ERROR"))
+
 (defn me []
   (GET (str api-uri "/user")
-       {:handler auth-success!
+       {:handler get-me-success!
         :headers (get-auth-header)
         :response-format (json-response-format {:keywords? true})
-        :error-handler auth-error!}))
+        :error-handler get-me-error!}))
 (comment
   (me))
