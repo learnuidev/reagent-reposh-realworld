@@ -6,14 +6,20 @@
             [reitit.coercion.spec :as rss]
             ;; state
             [app.auth :as auth]
+            [app.profile :as profile]
             ;; pages
             [app.pages.home :refer [home-page]]
             [app.pages.login :refer [login-page]]
             [app.pages.register :refer [register-page]]
-            [app.pages.settings :refer [settings-page]]))
+            [app.pages.settings :refer [settings-page]]
+            [app.pages.profile :refer [profile-page]]))
 
 (defonce routes-state (r/atom nil))
 
+(defonce temp (atom nil))
+
+(comment
+  @temp)
 (def routes
   [["/"         {:name :routes/home
                  :view #'home-page
@@ -31,7 +37,18 @@
                                         (when (seq @auth/error-state)
                                           (reset! auth/error-state nil)))}]}]
    ["/settings" {:name :routes/settings
-                 :view #'settings-page}]])
+                 :view #'settings-page}]
+   ["/user/@:username" {:name :routes/profile
+                        :view #'profile-page
+                        :parameters
+                        {:path {:username string?}}
+                        :controllers
+                        [{:params (fn [match]
+                                    (:path (:parameters match)))
+                          :start (fn [{:keys [username] :as props}]
+                                   (profile/fetch! username)
+                                   (println "Entering Profile of - " username)
+                                   (reset! temp props))}]}]])
 
 (comment "takes route name and generates the route path, nil if not found"
          (rfe/href ::login))

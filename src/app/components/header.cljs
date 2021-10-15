@@ -24,7 +24,7 @@
      [:i.ion-gear-a]
      (gstring/unescapeEntities "&nbsp;") "Settings"]]
    [:li.nav-item
-    [:a.nav-link {:href (rfe/href :routes/register)}
+    [:a.nav-link {:href (rfe/href :routes/profile {:username username})}
      [:img.user-pic {:src image}]
      username]]])
 
