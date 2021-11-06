@@ -3,7 +3,7 @@
             [reitit.frontend.easy :as rfe]
             [app.api :refer [api-uri]]
             [clojure.string :as s]
-            [ajax.core :refer [GET POST json-request-format json-response-format]]))
+            [ajax.core :refer [GET POST PUT json-request-format json-response-format]]))
 
 ;; Local Storage testing
 (comment
@@ -84,5 +84,26 @@
         :headers (get-auth-header)
         :response-format (json-response-format {:keywords? true})
         :error-handler get-me-error!}))
+
+;; save-user
+(def example-user {:email ""
+                   :password ""
+                   :username ""
+                   :image ""
+                   :bio ""})
+
+(defn save-user! [user] ;; {:email "" :password}
+  (PUT (str api-uri "/user")
+       {:params {:user user}
+        :handler get-me-success!
+        :error-handler get-me-error!
+        :headers (get-auth-header)
+        :format (json-request-format)
+        :response-format (json-response-format {:keywords? true})}))
+
+(comment
+  (save-user! {:image "www.learnuidev123.com"
+               :bio "I make videos on Clojure and ClojureScript"}))
+
 (comment
   (me))

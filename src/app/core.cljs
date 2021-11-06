@@ -7,8 +7,9 @@
    [app.auth :as auth]
    ;; router
    [app.routes :refer [router-start!]]
-   ;; entity
-   [app.articles :refer [articles-browse]]))
+   ;; entities
+   [app.articles :refer [articles-browse]]
+   [app.profile]))
 
 (defn ^:dev/after-load render
   "Render the toplevel component for this app.
