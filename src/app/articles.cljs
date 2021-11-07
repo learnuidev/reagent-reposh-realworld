@@ -5,6 +5,8 @@
 
 (defonce articles-state (r/atom nil))
 
+(comment
+  @articles-state)
 (defn handler [response]
   (reset! articles-state response))
 
