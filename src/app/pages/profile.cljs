@@ -1,5 +1,5 @@
 (ns app.pages.profile
-  (:require [app.profile :refer [profile-state]]
+  (:require [app.profile :refer [profile-state follow! unfollow!]]
             [app.auth :refer [auth-state]]
             [goog.string :as gstring]
             [reitit.frontend.easy :as rfe]))
@@ -12,9 +12,15 @@
      (gstring/unescapeEntities "&nbsp;")
      "Edit Profile Settings"]))
 
+(defn toggle-follow [{:keys [following username]}]
+  (if following
+    (unfollow! username)
+    (follow! username)))
+
 (defn follow-user-button [user? user]
   (when-not user?
-    [:button {:class ["btn btn-sm action-btn" (if (:following user) "btn-secondary" "btn-outline-secondary")]}
+    [:button {:class ["btn btn-sm action-btn" (if (:following user) "btn-secondary" "btn-outline-secondary")]
+              :on-click #(toggle-follow user)}
      [:i.ion-plus-round]
      (gstring/unescapeEntities "&nbsp;")
      (if (:following user) "Unfollow" "Follow")]))

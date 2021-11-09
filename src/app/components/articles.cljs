@@ -1,12 +1,14 @@
-(ns app.components.articles)
+(ns app.components.articles
+  (:require [reitit.frontend.easy :as rfe]))
 
 (defn article-preview [{:keys [title description favoritesCount author createdAt tagList]}]
   [:div.article-preview
    [:div.article-meta
-    [:a
+    [:a {:href (rfe/href :routes/profile {:username (:username author)})}
      [:img {:src (:image author)}]]
     [:div.info
-     [:a.author (:username author)]
+     [:a.author {:href (rfe/href :routes/profile {:username (:username author)})}
+      (:username author)]
      [:span.date (.toDateString (new js/Date createdAt))]]
     [:div.pull-xs-right
      [:button.btn.btn-sm.btn-outline-primary
