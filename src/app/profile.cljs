@@ -16,6 +16,7 @@
 (defn fetch! [username]
   (GET (str api-uri "/profiles/" username)
        {:handler fetch-success!
+        :headers (get-auth-header)
         :response-format (json-response-format {:keywords? true})
         :error-handler fetch-error!}))
 
