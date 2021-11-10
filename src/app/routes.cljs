@@ -48,7 +48,9 @@
                           :start (fn [{:keys [username] :as props}]
                                    (profile/fetch! username)
                                    (println "Entering Profile of - " username)
-                                   (reset! temp props))}]}]])
+                                   (reset! temp props))
+                          :stop (fn []
+                                  (reset! profile/profile-state nil))}]}]])
 
 (comment "takes route name and generates the route path, nil if not found"
          (rfe/href ::login))

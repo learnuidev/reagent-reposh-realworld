@@ -1,7 +1,10 @@
 (ns app.pages.profile
   (:require [app.profile :refer [profile-state follow! unfollow!]]
+            [app.components.articles :refer [articles]]
+            [app.articles :refer [articles-state loading-state fetch-by favourited-by]]
             [app.auth :refer [auth-state]]
             [goog.string :as gstring]
+            [reagent.core :as r]
             [reitit.frontend.easy :as rfe]))
 
 (defn edit-profile-settings [user?]
@@ -25,6 +28,18 @@
      (gstring/unescapeEntities "&nbsp;")
      (if (:following user) "Unfollow" "Follow")]))
 
+;;
+;;
+(defonce tab-state (r/atom :author))
+
+(defn fetch-author [username]
+  (reset! tab-state :author)
+  (fetch-by username 0))
+
+(defn fetch-favourited [username]
+  (reset! tab-state :favourited)
+  (favourited-by username 0))
+
 (defn profile-page []
   (let [user?   (= (:username @auth-state)
                    (:username @profile-state))]
@@ -41,9 +56,12 @@
         [:div.articles-toggle
          [:ul.nav.nav-pills.outline-active
           [:li.nav-item
-           [:a.nav-link.active
+           [:a {:class ["nav-link" (when (= @tab-state :author) "active")]
+                :on-click #(fetch-author (:username @profile-state))}
             "My Articles"]]
           [:li.nav-item
-           [:a.nav-link
+           [:a {:class ["nav-link" (when (= @tab-state :favourited) "active")]
+                :on-click #(fetch-favourited (:username @profile-state))}
             "Favourited Articles"]]]]
-        [:div "Article List Comp"]]])))
+        [articles {:articles (:articles (deref articles-state))
+                   :loading? @loading-state}]]])))
