@@ -4,6 +4,7 @@
             [ajax.core :refer [GET json-response-format]]))
 
 (defonce articles-state (r/atom nil))
+(defonce tab-state (r/atom :all))
 (defonce loading-state (r/atom false))
 
 (comment
@@ -18,8 +19,9 @@
 
 (defn articles-browse []
   (reset! loading-state true)
-  (GET (str api-uri "/articles?limit=20")
+  (GET (str api-uri "/articles?limit=10&offset=0")
        {:handler handler
+        :headers (get-auth-header)
         :response-format (json-response-format {:keywords? true})
         :error-handler error-handler}))
 
@@ -42,13 +44,15 @@
         :error-handler error-handler}))
 
 ;;
-(defn fetch-by [author page]
-  (reset! loading-state true)
-  (GET (str api-uri "/articles?author=" (js/encodeURIComponent author) "&" (limit 5 page))
-       {:handler handler
-        :headers (get-auth-header)
-        :response-format (json-response-format {:keywords? true})
-        :error-handler error-handler}))
+(defn fetch-by
+  ([author] (fetch-by author 0))
+  ([author page]
+   (reset! loading-state true)
+   (GET (str api-uri "/articles?author=" (js/encodeURIComponent author) "&" (limit 5 page))
+        {:handler handler
+         :headers (get-auth-header)
+         :response-format (json-response-format {:keywords? true})
+         :error-handler error-handler})))
 
 (comment
   (fetch-by "learnuidev2@gmail.com" 0))
