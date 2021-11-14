@@ -9,7 +9,8 @@
    [app.routes :refer [router-start!]]
    ;; entities
    [app.articles :refer [articles-browse]]
-   [app.profile]))
+   [app.profile]
+   [app.tags]))
 
 (defn ^:dev/after-load render
   "Render the toplevel component for this app.

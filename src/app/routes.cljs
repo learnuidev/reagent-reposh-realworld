@@ -9,6 +9,7 @@
             [app.profile :as profile]
             [app.api :refer [get-token]]
             [app.articles :as articles]
+            [app.tags :as tags]
             ;; pages
             [app.pages.home :refer [home-page]]
             [app.pages.login :refer [login-page]]
@@ -26,6 +27,7 @@
   [["/"         {:name :routes/home
                  :view #'home-page
                  :controllers [{:start (fn []
+                                         (tags/tags-browse)
                                          (if (get-token)
                                            (do
                                              (reset! articles/tab-state :feed)
@@ -33,7 +35,8 @@
                                            (do
                                              (reset! articles/tab-state :all)
                                              (articles/articles-browse))))
-                                :stop #(js/console.log  "exit - home page")}]}]
+                                :stop (fn []
+                                        (tags/reset-tags))}]}]
    ["/login"    {:name :routes/login
                  :view #'login-page
                  :controllers [{:start #(js/console.log "enter - login page")
