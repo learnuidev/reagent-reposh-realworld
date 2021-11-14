@@ -5,6 +5,7 @@
 
 (defonce articles-state (r/atom nil))
 (defonce tab-state (r/atom :all))
+(defonce tag-state (r/atom nil))
 (defonce loading-state (r/atom false))
 
 (comment
@@ -67,3 +68,15 @@
 
 (comment
   (favourited-by "learnuidev2@gmail.com" 0))
+
+;;
+(defn articles-by-tag [tag]
+  (reset! loading-state true)
+  (GET (str api-uri "/articles?" (limit 10 0) "&tag=" tag)
+       {:handler handler
+        :error-handler error-handler
+        :headers (get-auth-header)
+        :response-format (json-response-format {:keywords? true})}))
+
+(comment
+  (articles-by-tag @tag-state))
