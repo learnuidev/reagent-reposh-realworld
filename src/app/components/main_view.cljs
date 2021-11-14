@@ -1,10 +1,8 @@
 (ns app.components.main-view
   (:require
-   [app.articles :refer [articles-state loading-state articles-feed articles-browse]]
+   [app.articles :refer [articles-state tab-state loading-state articles-feed articles-browse]]
    [app.components.articles :refer [articles]]
    [reagent.core :as r]))
-
-(defonce tab-state (r/atom :all))
 
 (defn handle-feed []
   (reset! tab-state :feed)

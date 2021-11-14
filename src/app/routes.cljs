@@ -7,6 +7,8 @@
             ;; state
             [app.auth :as auth]
             [app.profile :as profile]
+            [app.api :refer [get-token]]
+            [app.articles :as articles]
             ;; pages
             [app.pages.home :refer [home-page]]
             [app.pages.login :refer [login-page]]
@@ -23,7 +25,14 @@
 (def routes
   [["/"         {:name :routes/home
                  :view #'home-page
-                 :controllers [{:start #(js/console.log "enter - home page")
+                 :controllers [{:start (fn []
+                                         (if (get-token)
+                                           (do
+                                             (reset! articles/tab-state :feed)
+                                             (articles/articles-feed))
+                                           (do
+                                             (reset! articles/tab-state :all)
+                                             (articles/articles-browse))))
                                 :stop #(js/console.log  "exit - home page")}]}]
    ["/login"    {:name :routes/login
                  :view #'login-page
@@ -47,6 +56,7 @@
                                     (:path (:parameters match)))
                           :start (fn [{:keys [username] :as props}]
                                    (profile/fetch! username)
+                                   (articles/fetch-by username)
                                    (println "Entering Profile of - " username)
                                    (reset! temp props))
                           :stop (fn []
