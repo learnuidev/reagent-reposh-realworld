@@ -149,3 +149,42 @@
         :headers (get-auth-header)
         :format (json-request-format)
         :response-format (json-response-format {:keywords? true})}))
+
+(defn update-article [article updated-article]
+  (if (= (:slug updated-article) (:slug article))
+    updated-article
+    article))
+
+(defn toggle-favourite-success! [{:keys [article]}]
+  (reset! submitting-state false)
+  (swap! articles-state assoc :articles (map #(update-article % article) (:articles @articles-state))))
+
+(comment
+  (:articles @articles-state))
+;; favourites
+(defn favourite-article! [article]
+  (reset! submitting-state true)
+  (POST (str api-uri "/articles/" (:slug article) "/favorite")
+        {:params {:article (dissoc article :slug)}
+         :handler toggle-favourite-success!
+         :error-handler create-error!
+         :headers (get-auth-header)
+         :format (json-request-format)
+         :response-format (json-response-format {:keywords? true})}))
+
+(comment
+  (favourite-article! @current-article-state))
+
+(defn unfavourite-article! [article]
+  (reset! submitting-state true)
+  (DELETE (str api-uri "/articles/" (:slug article) "/favorite")
+          {:params {:article (dissoc article :slug)}
+           :handler toggle-favourite-success!
+           :error-handler create-error!
+           :headers (get-auth-header)
+           :format (json-request-format)
+           :response-format (json-response-format {:keywords? true})}))
+
+;;
+(comment
+  (unfavourite-article! @current-article-state))

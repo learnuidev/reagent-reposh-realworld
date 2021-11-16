@@ -1,7 +1,13 @@
 (ns app.components.articles
-  (:require [reitit.frontend.easy :as rfe]))
+  (:require [reitit.frontend.easy :as rfe]
+            [app.articles :refer [favourite-article! unfavourite-article!]]))
 
-(defn article-preview [{:keys [slug title description favoritesCount author createdAt tagList]}]
+(defn toggle-favourite! [article]
+  (if (:favorited article)
+    (unfavourite-article! article)
+    (favourite-article! article)))
+(defn article-preview [{:keys [slug favorited title description favoritesCount author createdAt tagList]
+                        :as article}]
   [:div.article-preview
    [:div.article-meta
     [:a {:href (rfe/href :routes/profile {:username (:username author)})}
@@ -12,6 +18,7 @@
      [:span.date (.toDateString (new js/Date createdAt))]]
     [:div.pull-xs-right
      [:button.btn.btn-sm.btn-outline-primary
+      {:on-click #(toggle-favourite! article)}
       [:i.ion-heart favoritesCount]]]]
    [:a.preview-link {:href (rfe/href :routes/article {:slug slug})}
     [:h1 title]
