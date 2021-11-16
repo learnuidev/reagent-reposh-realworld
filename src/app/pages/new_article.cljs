@@ -27,43 +27,46 @@
       [:div.editor-page>div.container.page>div.row
        [:div.col-md-10.offset-md-1.col-xs-12
         [list-errors @error-state]
-        [:fieldset.form-group
-         [:input.form-control.form-control-lg
-          {:placeholder "Article Title"
-           :type :text
-           :value (:title @state)
-           :on-change #(swap! state assoc :title (.. % -target -value))}]]
-        [:fieldset.form-group
-         [:input.form-control
-          {:placeholder "What's this article about?"
-           :type :text
-           :value (:description @state)
-           :on-change #(swap! state assoc :description (.. % -target -value))}]]
-        [:fieldset.form-group
-         [:textarea.form-control
-          {:placeholder "Write your article (in markdown)"
-           :rows 8
-           :value (:body @state)
-           :on-change #(swap! state assoc :body (.. % -target -value))}]]
-        [:fieldset.form-group
-         [:input.form-control
-          {:placeholder "Enter tags"
-           :type :text
-           :value (:tag-input @state)
-           :on-change #(swap! state assoc :tag-input (.. % -target -value))
-           :on-key-up watch-for-enter}]]
-        [:div.tag-list
-         (when (seq (:tagList @state))
-           (for [tag  (:tagList @state)]
-             ^{:key tag} [:span.tag-default.tag-pill
-                          [:i.ion-close-round {:on-click #(remove-tag tag)}]
-                          tag]))]
-        [:button.btn.btn-lg.pull-xs-right.btn-primary
-         {:disabled @submitting-state
-          :on-click (fn [evt]
-                      (.preventDefault evt)
-                      (add-new-article @state))}
-         "Publish Article"]]])))
+        [:form
+         [:fieldset
+          [:fieldset.form-group
+           [:input.form-control.form-control-lg
+            {:placeholder "Article Title"
+             :type :text
+             :value (:title @state)
+             :on-change #(swap! state assoc :title (.. % -target -value))}]]
+          [:fieldset.form-group
+           [:input.form-control
+            {:placeholder "What's this article about?"
+             :type :text
+             :value (:description @state)
+             :on-change #(swap! state assoc :description (.. % -target -value))}]]
+          [:fieldset.form-group
+           [:textarea.form-control
+            {:placeholder "Write your article (in markdown)"
+             :rows 8
+             :value (:body @state)
+             :on-change #(swap! state assoc :body (.. % -target -value))}]]
+          [:fieldset.form-group
+           [:input.form-control
+            {:placeholder "Enter tags"
+             :type :text
+             :value (:tag-input @state)
+             :on-change #(swap! state assoc :tag-input (.. % -target -value))
+             :on-key-up watch-for-enter}]
+           [:div.tag-list
+            (when (seq (:tagList @state))
+              (for [tag  (:tagList @state)]
+                ^{:key tag} [:span.tag-default.tag-pill
+                             [:i.ion-close-round {:on-click #(remove-tag tag)}]
+                             tag]))]]
+          [:button.btn.btn-lg.pull-xs-right.btn-primary
+           {:disabled @submitting-state
+            :type :button
+            :on-click (fn [evt]
+                        (.preventDefault evt)
+                        (add-new-article @state))}
+           "Publish Article"]]]]])))
 
 (defn new-article-page []
   (let [initial-state {:title ""

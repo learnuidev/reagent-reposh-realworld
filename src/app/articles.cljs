@@ -1,5 +1,6 @@
 (ns app.articles
   (:require [reagent.core :as r]
+            [reitit.frontend.easy :as rfe]
             [app.api :refer [api-uri get-auth-header]]
             [ajax.core :refer [GET POST PUT json-request-format json-response-format]]))
 
@@ -90,7 +91,8 @@
 
 (defn create-success! [{:keys [article]}]
   (reset! submitting-state false)
-  (reset! current-article-state article))
+  (reset! current-article-state article)
+  (rfe/push-state :routes/article {:slug (:slug article)}))
 
 (defn create-error! [{{:keys [errors]} :response}]
   (reset! submitting-state false)
@@ -105,3 +107,23 @@
          :headers (get-auth-header)
          :format (json-request-format)
          :response-format (json-response-format {:keywords? true})}))
+
+;; fetch
+(defn fetch-success! [{:keys [article]}]
+  (reset! loading-state false)
+  (reset! current-article-state article))
+
+(defn fetch [slug]
+  (reset! loading-state true)
+  (GET (str api-uri "/articles/" slug)
+       {:handler fetch-success!
+        :error-handler error-handler
+        :headers (get-auth-header)
+        :response-format (json-response-format {:keywords? true})}))
+
+(comment
+  @error-state
+  @current-article-state)
+(comment
+  (fetch "Demo-article-3")
+  (fetch "blablabla"))
