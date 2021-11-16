@@ -16,7 +16,7 @@
    [:li.nav-item
     [:a.nav-link {:href (rfe/href :routes/home)} "Home"]]
    [:li.nav-item
-    [:a.nav-link {:href (rfe/href :routes/login)}
+    [:a.nav-link {:href (rfe/href :routes/new-article)}
      [:i.ion-compose]
      (gstring/unescapeEntities "&nbsp;") "New Article"]]
    [:li.nav-item

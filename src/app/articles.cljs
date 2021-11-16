@@ -1,13 +1,18 @@
 (ns app.articles
   (:require [reagent.core :as r]
             [app.api :refer [api-uri get-auth-header]]
-            [ajax.core :refer [GET json-response-format]]))
+            [ajax.core :refer [GET POST PUT json-request-format json-response-format]]))
 
 (defonce articles-state (r/atom nil))
+(defonce current-article-state (r/atom nil))
 (defonce tab-state (r/atom :all))
 (defonce tag-state (r/atom nil))
 (defonce loading-state (r/atom false))
+(defonce submitting-state (r/atom false))
+(defonce error-state (r/atom nil))
 
+(comment
+  @current-article-state)
 (comment
   @articles-state)
 (defn handler [response]
@@ -80,3 +85,23 @@
 
 (comment
   (articles-by-tag @tag-state))
+
+;; add new article
+
+(defn create-success! [{:keys [article]}]
+  (reset! submitting-state false)
+  (reset! current-article-state article))
+
+(defn create-error! [{{:keys [errors]} :response}]
+  (reset! submitting-state false)
+  (reset! error-state errors))
+
+(defn create-article! [article]
+  (reset! submitting-state true)
+  (POST (str api-uri "/articles")
+        {:params {:article article}
+         :handler create-success!
+         :error-handler create-error!
+         :headers (get-auth-header)
+         :format (json-request-format)
+         :response-format (json-response-format {:keywords? true})}))
