@@ -1,12 +1,8 @@
 (ns app.pages.article-details
-  (:require [app.articles :refer [current-article-state loading-state]]
+  (:require [app.articles :refer [current-article-state loading-state delete-article!]]
             [reitit.frontend.easy :as rfe]))
 
-(comment
-  (seq @current-article-state)
-  (seq {}))
-
-(defn article-actions [{{:keys [author] :as article} :article
+(defn article-actions [{{:keys [author slug] :as article} :article
                         can-modify? :can-modify?}]
   (when can-modify?
     [:span
@@ -14,6 +10,7 @@
       [:i.ion-edit]
       "Edit Article"]
      [:button.btn.btn-outline-danger.btn-sm
+      {:on-click #(delete-article! slug)}
       [:i.ion-trash-a]
       "Delete Article"]]))
 
