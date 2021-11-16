@@ -1,7 +1,7 @@
 (ns app.components.articles
   (:require [reitit.frontend.easy :as rfe]))
 
-(defn article-preview [{:keys [title description favoritesCount author createdAt tagList]}]
+(defn article-preview [{:keys [slug title description favoritesCount author createdAt tagList]}]
   [:div.article-preview
    [:div.article-meta
     [:a {:href (rfe/href :routes/profile {:username (:username author)})}
@@ -13,7 +13,7 @@
     [:div.pull-xs-right
      [:button.btn.btn-sm.btn-outline-primary
       [:i.ion-heart favoritesCount]]]]
-   [:a.preview-link
+   [:a.preview-link {:href (rfe/href :routes/article {:slug slug})}
     [:h1 title]
     [:p description]
     [:span "Read more..."]

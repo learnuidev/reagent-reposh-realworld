@@ -15,7 +15,9 @@
             [app.pages.login :refer [login-page]]
             [app.pages.register :refer [register-page]]
             [app.pages.settings :refer [settings-page]]
-            [app.pages.profile :refer [profile-page]]))
+            [app.pages.profile :refer [profile-page]]
+            [app.pages.new-article :refer [new-article-page]]
+            [app.pages.article-details :refer [article-details-page]]))
 
 (defonce routes-state (r/atom nil))
 
@@ -50,6 +52,17 @@
                                           (reset! auth/error-state nil)))}]}]
    ["/settings" {:name :routes/settings
                  :view #'settings-page}]
+   ["/editor/new" {:name :routes/new-article
+                   :view #'new-article-page}]
+   ["/article/:slug" {:name :routes/article
+                      :view #'article-details-page
+                      :parameters
+                      {:path {:slug string?}}
+                      :controllers
+                      [{:params (fn [match]
+                                  (:path (:parameters match)))
+                        :start (fn [{:keys [slug]}]
+                                 (articles/fetch slug))}]}]
    ["/user/@:username" {:name :routes/profile
                         :view #'profile-page
                         :parameters
