@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
             [app.api :refer [api-uri get-auth-header]]
-            [ajax.core :refer [GET POST PUT json-request-format json-response-format]]))
+            [ajax.core :refer [GET POST PUT DELETE json-request-format json-response-format]]))
 
 (defonce articles-state (r/atom nil))
 (defonce current-article-state (r/atom nil))
@@ -127,3 +127,14 @@
 (comment
   (fetch "Demo-article-3")
   (fetch "blablabla"))
+
+(defn delete-success! [resp]
+  (rfe/push-state :routes/home))
+
+(defn delete-article! [slug]
+  (reset! loading-state true)
+  (DELETE (str api-uri "/articles/" slug)
+          {:handler delete-success!
+           :error-handler error-handler
+           :headers (get-auth-header)
+           :response-format (json-response-format {:keywords? true})}))
