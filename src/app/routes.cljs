@@ -17,6 +17,7 @@
             [app.pages.settings :refer [settings-page]]
             [app.pages.profile :refer [profile-page]]
             [app.pages.new-article :refer [new-article-page]]
+            [app.pages.edit-article :refer [edit-article-page]]
             [app.pages.article-details :refer [article-details-page]]))
 
 (defonce routes-state (r/atom nil))
@@ -54,6 +55,17 @@
                  :view #'settings-page}]
    ["/editor/new" {:name :routes/new-article
                    :view #'new-article-page}]
+   ["/editor/edit/:slug" {:name :routes/edit-article
+                          :view #'edit-article-page
+                          :parameters
+                          {:path {:slug string?}}
+                          :controllers
+                          [{:params (fn [match]
+                                      (:path (:parameters match)))
+                            :start (fn [{:keys [slug]}]
+                                     (articles/fetch slug))
+                            :stop (fn []
+                                    (reset! articles/current-article-state nil))}]}]
    ["/article/:slug" {:name :routes/article
                       :view #'article-details-page
                       :parameters
@@ -62,7 +74,9 @@
                       [{:params (fn [match]
                                   (:path (:parameters match)))
                         :start (fn [{:keys [slug]}]
-                                 (articles/fetch slug))}]}]
+                                 (articles/fetch slug))
+                        :stop (fn []
+                                (reset! articles/current-article-state nil))}]}]
    ["/user/@:username" {:name :routes/profile
                         :view #'profile-page
                         :parameters
