@@ -7,6 +7,7 @@
   (when can-modify?
     [:span
      [:a.btn.btn-outline-secondary.btn-sm
+      {:href (rfe/href :routes/edit-article {:slug slug})}
       [:i.ion-edit]
       "Edit Article"]
      [:button.btn.btn-outline-danger.btn-sm

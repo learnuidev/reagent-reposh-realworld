@@ -138,3 +138,14 @@
            :error-handler error-handler
            :headers (get-auth-header)
            :response-format (json-response-format {:keywords? true})}))
+
+;; edit
+(defn update-article! [article]
+  (reset! submitting-state true)
+  (PUT (str api-uri "/articles/" (:slug article))
+       {:params {:article (dissoc article :slug)}
+        :handler create-success!
+        :error-handler create-error!
+        :headers (get-auth-header)
+        :format (json-request-format)
+        :response-format (json-response-format {:keywords? true})}))
