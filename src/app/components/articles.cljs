@@ -1,6 +1,10 @@
 (ns app.components.articles
   (:require [reitit.frontend.easy :as rfe]
-            [app.articles :refer [favourite-article! unfavourite-article!]]))
+            [app.articles :refer [favourite-article! unfavourite-article! submitting-state]]))
+
+;;
+; const FAVORITED_CLASS = 'btn btn-sm btn-primary';
+; const NOT_FAVORITED_CLASS = 'btn btn-sm btn-outline-primary';
 
 (defn toggle-favourite! [article]
   (if (:favorited article)
@@ -17,8 +21,10 @@
       (:username author)]
      [:span.date (.toDateString (new js/Date createdAt))]]
     [:div.pull-xs-right
-     [:button.btn.btn-sm.btn-outline-primary
-      {:on-click #(toggle-favourite! article)}
+     [:button
+      {:on-click #(toggle-favourite! article)
+       :disabled @submitting-state
+       :class ["btn btn-sm" (if (:favorited article) "btn-primary" "btn-outline-primary")]}
       [:i.ion-heart favoritesCount]]]]
    [:a.preview-link {:href (rfe/href :routes/article {:slug slug})}
     [:h1 title]
