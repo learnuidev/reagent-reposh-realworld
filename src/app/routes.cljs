@@ -10,6 +10,7 @@
             [app.api :refer [get-token]]
             [app.articles :as articles]
             [app.tags :as tags]
+            [app.comments :as comments]
             ;; pages
             [app.pages.home :refer [home-page]]
             [app.pages.login :refer [login-page]]
@@ -74,9 +75,11 @@
                       [{:params (fn [match]
                                   (:path (:parameters match)))
                         :start (fn [{:keys [slug]}]
-                                 (articles/fetch slug))
+                                 (articles/fetch slug)
+                                 (comments/browse-comments slug))
                         :stop (fn []
-                                (reset! articles/current-article-state nil))}]}]
+                                (reset! articles/current-article-state nil)
+                                (reset! comments/comments-state nil))}]}]
    ["/user/@:username" {:name :routes/profile
                         :view #'profile-page
                         :parameters
@@ -90,6 +93,7 @@
                                    (println "Entering Profile of - " username)
                                    (reset! temp props))
                           :stop (fn []
+                                  (reset! profile/tab-state :author)
                                   (reset! profile/profile-state nil))}]}]])
 
 (comment "takes route name and generates the route path, nil if not found"

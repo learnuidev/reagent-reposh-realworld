@@ -6,6 +6,7 @@
             [ajax.core :refer [GET POST PUT DELETE json-request-format json-response-format]]))
 
 (defonce profile-state (r/atom nil))
+(defonce tab-state (r/atom :author))
 (defonce error-state (r/atom nil))
 
 (defn fetch-success! [{:keys [profile]}]
