@@ -10,7 +10,8 @@
    ;; entities
    [app.articles :refer [articles-browse]]
    [app.profile]
-   [app.tags]))
+   [app.tags]
+   [app.comments]))
 
 (defn ^:dev/after-load render
   "Render the toplevel component for this app.

@@ -1,5 +1,5 @@
 (ns app.pages.profile
-  (:require [app.profile :refer [profile-state follow! unfollow!]]
+  (:require [app.profile :refer [profile-state tab-state follow! unfollow!]]
             [app.components.articles :refer [articles]]
             [app.articles :refer [articles-state loading-state fetch-by favourited-by]]
             [app.auth :refer [auth-state]]
@@ -30,8 +30,6 @@
 
 ;;
 ;;
-(defonce tab-state (r/atom :author))
-
 (defn fetch-author [username]
   (reset! tab-state :author)
   (fetch-by username 0))
