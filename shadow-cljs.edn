@@ -1,6 +1,32 @@
 {:builds
  {:app {:asset-path "/js"
-        :modules {:main {:init-fn app.core/main}}
+        :module-loader true
+        :modules {:main
+                  {:init-fn app.core/main}
+                  :article-details
+                  {:entries [app.pages.article-details]
+                   :depends-on #{:main}}
+                  :edit-article
+                  {:entries [app.pages.edit-article]
+                   :depends-on #{:main}}
+                  :home
+                  {:entries [app.pages.home]
+                   :depends-on #{:main}}
+                  :new-article
+                  {:entries [app.pages.new-article]
+                   :depends-on #{:main}}
+                  :profile
+                  {:entries [app.pages.profile]
+                   :depends-on #{:main}}
+                  :register
+                  {:entries [app.pages.register]
+                   :depends-on #{:main}}
+                  :login
+                  {:entries [app.pages.login]
+                   :depends-on #{:main}}
+                  :settings
+                  {:entries [app.pages.settings]
+                   :depends-on #{:main}}}
         :output-dir "public/js"
         :target :browser}}
  :dependencies [[reagent "0.8.1"]

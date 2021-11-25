@@ -12,14 +12,16 @@
             [app.tags :as tags]
             [app.comments :as comments]
             ;; pages
-            [app.pages.home :refer [home-page]]
-            [app.pages.login :refer [login-page]]
-            [app.pages.register :refer [register-page]]
-            [app.pages.settings :refer [settings-page]]
-            [app.pages.profile :refer [profile-page]]
-            [app.pages.new-article :refer [new-article-page]]
-            [app.pages.edit-article :refer [edit-article-page]]
-            [app.pages.article-details :refer [article-details-page]]))
+            ; [app.pages.home :refer [home-page]]
+            ; [app.pages.login :refer [login-page]]
+            ; [app.pages.register :refer [register-page]]
+            ; [app.pages.settings :refer [settings-page]]
+            ; [app.pages.profile :refer [profile-page]]
+            ; [app.pages.new-article :refer [new-article-page]]
+            ; [app.pages.edit-article :refer [edit-article-page]]
+            ; [app.pages.article-details :refer [article-details-page]]
+            ;; lazy-component
+            [app.util :refer (lazy-component)]))
 
 (defonce routes-state (r/atom nil))
 
@@ -29,7 +31,7 @@
   @temp)
 (def routes
   [["/"         {:name :routes/home
-                 :view #'home-page
+                 :view (lazy-component app.pages.home/home-page)
                  :controllers [{:start (fn []
                                          (tags/tags-browse)
                                          (if (get-token)
@@ -42,22 +44,22 @@
                                 :stop (fn []
                                         (tags/reset-tags))}]}]
    ["/login"    {:name :routes/login
-                 :view #'login-page
+                 :view (lazy-component app.pages.login/login-page)
                  :controllers [{:start #(js/console.log "enter - login page")
                                 :stop #(js/console.log  "exit - login page")}]}]
    ["/register" {:name :routes/register
-                 :view #'register-page
+                 :view (lazy-component app.pages.register/register-page)
                  :controllers [{:start #(js/console.log "enter - register page")
                                 :stop (fn []
                                         (js/console.log "leave - register page")
                                         (when (seq @auth/error-state)
                                           (reset! auth/error-state nil)))}]}]
    ["/settings" {:name :routes/settings
-                 :view #'settings-page}]
+                 :view (lazy-component app.pages.settings/settings-page)}]
    ["/editor/new" {:name :routes/new-article
-                   :view #'new-article-page}]
+                   :view (lazy-component app.pages.new-article/new-article-page)}]
    ["/editor/edit/:slug" {:name :routes/edit-article
-                          :view #'edit-article-page
+                          :view (lazy-component app.pages.edit-article/edit-article-page)
                           :parameters
                           {:path {:slug string?}}
                           :controllers
@@ -68,7 +70,7 @@
                             :stop (fn []
                                     (reset! articles/current-article-state nil))}]}]
    ["/article/:slug" {:name :routes/article
-                      :view #'article-details-page
+                      :view (lazy-component app.pages.article-details/article-details-page)
                       :parameters
                       {:path {:slug string?}}
                       :controllers
@@ -81,7 +83,7 @@
                                 (reset! articles/current-article-state nil)
                                 (reset! comments/comments-state nil))}]}]
    ["/user/@:username" {:name :routes/profile
-                        :view #'profile-page
+                        :view (lazy-component app.pages.profile/profile-page)
                         :parameters
                         {:path {:username string?}}
                         :controllers
