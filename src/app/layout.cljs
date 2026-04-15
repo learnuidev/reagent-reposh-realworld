@@ -1,5 +1,7 @@
 (ns app.layout
   (:require
+   ["react" :as react]
+   [reagent.core :as r]
    [app.routes :refer [routes-state]]
    [app.auth :refer [auth-state]]
    ;; components
@@ -11,4 +13,5 @@
   [:div
    [header @auth-state]
    (let [current-view (-> @routes-state :data :view)]
-     [current-view @routes-state])])
+     [:> react/Suspense {:fallback (r/as-element [:div "Loading ..."])}
+        [:> current-view @routes-state]])])
